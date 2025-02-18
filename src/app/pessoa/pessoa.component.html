@@ -1,0 +1,369 @@
+<!-- Modal de Pesquisa -->
+<div *ngIf="modalPesquisaAberto">
+  <!-- Backdrop Escuro -->
+  <div class="modal-backdrop fade show"></div>
+
+  <!-- Container do Modal -->
+  <div
+    class="modal fade show"
+    tabindex="-1"
+    role="dialog"
+    style="display: block"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <!-- Cabeçalho do Modal -->
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Pesquisar Pessoa</h5>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="fecharModalPesquisa()"
+          ></button>
+        </div>
+        <!-- Corpo do Modal -->
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">ID (opcional):</label>
+            <input
+              type="number"
+              [(ngModel)]="pesquisa.id"
+              name="idPesquisa"
+              class="form-control"
+              placeholder="Informe o ID"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">CPF (opcional):</label>
+            <input
+              type="text"
+              [(ngModel)]="pesquisa.cpf"
+              name="cpfPesquisa"
+              class="form-control"
+              placeholder="Informe o CPF (ex.: 000.000.000-00)"
+            />
+          </div>
+        </div>
+        <!-- Rodapé do Modal -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="fecharModalPesquisa()"
+          >
+            Fechar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="pesquisarModal()"
+          >
+            Pesquisar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Sucesso no Cadastro -->
+<div *ngIf="modalSucessoAberto">
+  <!-- Backdrop Escuro -->
+  <div class="modal-backdrop fade show"></div>
+  <!-- Modal -->
+  <div
+    class="modal fade show"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="cadastroModalLabel"
+    aria-hidden="true"
+    style="display: block"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <!-- Cabeçalho do Modal -->
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="cadastroModalLabel">Pessoa Cadastrada</h5>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="fecharModalSucesso()"
+          ></button>
+        </div>
+        <!-- Corpo do Modal -->
+        <div class="modal-body">
+          <p><strong>ID:</strong> {{ pessoa.id }}</p>
+          <p><strong>Nome:</strong> {{ pessoa.nome }}</p>
+          <p><strong>Data de Nascimento:</strong> {{ pessoa.data_nasc }}</p>
+          <p><strong>CPF:</strong> {{ pessoa.cpf }}</p>
+          <p>
+            <strong>Sexo:</strong>
+            {{ pessoa.sexo === "M" ? "Masculino" : "Feminino" }}
+          </p>
+          <p><strong>Altura:</strong> {{ pessoa.altura }} m</p>
+          <p><strong>Peso:</strong> {{ pessoa.peso }} kg</p>
+        </div>
+        <!-- Rodapé do Modal -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-light"
+            (click)="fecharModalSucesso()"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div *ngIf="modalAberto">
+  <!-- Backdrop Escuro -->
+  <div class="modal-backdrop fade show"></div>
+  <!-- Container do Modal -->
+  <div
+    class="modal fade show"
+    [ngStyle]="{ display: modalAberto ? 'block' : 'none' }"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <!-- Cabeçalho -->
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmação</h5>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="fecharModal()"
+          ></button>
+        </div>
+        <!-- Corpo -->
+        <div class="modal-body">
+          Tem certeza que deseja excluir esta pessoa?
+        </div>
+        <!-- Rodapé -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="fecharModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="confirmarExclusao()"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Formulário de Cadastro -->
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Cadastro de Pessoa</h2>
+
+  <div class="card shadow-sm p-4">
+    <!-- O formulário usa (ngSubmit) para disparar as validações -->
+    <form #pessoaForm="ngForm" (ngSubmit)="onSubmit(pessoaForm)">
+      <!-- Campo ID (opcional para pesquisa, alteração ou exclusão) -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">ID:</label>
+        <div class="col-sm-10">
+          <input
+            type="number"
+            [(ngModel)]="pessoa.id"
+            name="id"
+            class="form-control"
+            placeholder="ID"
+            readonly
+          />
+        </div>
+      </div>
+
+      <!-- Campo Nome -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Nome:</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            [(ngModel)]="pessoa.nome"
+            name="nome"
+            required
+            class="form-control"
+            placeholder="Digite o nome"
+          />
+          <div
+            *ngIf="pessoaForm.submitted && pessoaForm.controls['nome']?.invalid"
+            class="text-danger"
+          >
+            Nome é obrigatório.
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo Data de Nascimento -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Data de Nascimento:</label>
+        <div class="col-sm-10">
+          <input
+            type="date"
+            [(ngModel)]="pessoa.data_nasc"
+            name="data_nasc"
+            required
+            class="form-control"
+          />
+          <div
+            *ngIf="
+              pessoaForm.submitted && pessoaForm.controls['data_nasc']?.invalid
+            "
+            class="text-danger"
+          >
+            Data de Nascimento é obrigatória.
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo CPF -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">CPF:</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            [(ngModel)]="pessoa.cpf"
+            name="cpf"
+            required
+            class="form-control"
+            placeholder="Informe o CPF (ex.: 000.000.000-00)"
+          />
+          <div
+            *ngIf="pessoaForm.submitted && pessoaForm.controls['cpf']?.invalid"
+            class="text-danger"
+          >
+            CPF é obrigatório.
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo Sexo -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Sexo:</label>
+        <div class="col-sm-10">
+          <select
+            [(ngModel)]="pessoa.sexo"
+            name="sexo"
+            required
+            class="form-select"
+          >
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+          </select>
+          <div
+            *ngIf="pessoaForm.submitted && pessoaForm.controls['sexo']?.invalid"
+            class="text-danger"
+          >
+            Selecione o sexo.
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo Altura -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Altura (m):</label>
+        <div class="col-sm-10">
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="pessoa.altura"
+            name="altura"
+            required
+            class="form-control"
+            placeholder="Informe a altura"
+          />
+          <div
+            *ngIf="
+              pessoaForm.submitted && pessoaForm.controls['altura']?.invalid
+            "
+            class="text-danger"
+          >
+            Altura é obrigatória.
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo Peso -->
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Peso (kg):</label>
+        <div class="col-sm-10">
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="pessoa.peso"
+            name="peso"
+            required
+            class="form-control"
+            placeholder="Informe o peso"
+          />
+          <div
+            *ngIf="pessoaForm.submitted && pessoaForm.controls['peso']?.invalid"
+            class="text-danger"
+          >
+            Peso é obrigatório.
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="text-center mt-4">
+        <!-- Botão de submissão do formulário -->
+        <button type="submit" class="btn btn-primary me-2">Salvar</button>
+        <button type="button" (click)="alterar()" class="btn btn-warning me-2">
+          Alterar
+        </button>
+        <button
+          type="button"
+          (click)="abrirModal()"
+          class="btn btn-danger me-2"
+        >
+          Excluir
+        </button>
+        <button
+          type="button"
+          (click)="abrirModalPesquisa()"
+          class="btn btn-info me-2"
+        >
+          Pesquisar
+        </button>
+        <button
+          type="button"
+          (click)="calcularPesoIdeal()"
+          class="btn btn-success"
+        >
+          Calcular Peso Ideal
+        </button>
+      </div>
+    </form>
+
+    <!-- Mensagens de Feedback -->
+    <div *ngIf="mensagem" class="mt-3">
+      <div
+        [ngClass]="{
+          'alert alert-success': sucesso,
+          'alert alert-danger': !sucesso
+        }"
+      >
+        {{ mensagem }}
+      </div>
+    </div>
+  </div>
+</div>
